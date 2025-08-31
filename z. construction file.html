@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coming Soon | death-type X</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+    .container {
+      background: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 90%;
+    }
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+      color: #222;
+    }
+    p.tagline {
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+      color: #666;
+    }
+    .countdown {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin: 20px 0;
+      color: #444;
+    }
+    .btn {
+      display: inline-block;
+      margin: 10px;
+      padding: 12px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+      text-decoration: none;
+      color: #fff;
+    }
+    .notify {
+      background: #007BFF;
+    }
+    .notify:hover {
+      background: #0056b3;
+    }
+    .back {
+      background: #28a745;
+    }
+    .back:hover {
+      background: #1e7e34;
+    }
+    ul {
+      text-align: left;
+      margin: 20px auto;
+      display: inline-block;
+      font-size: 0.95rem;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>death-type X</h1>
+    <p class="tagline">Master typing skills — faster, smarter, distraction-free.</p>
+    
+    <div class="countdown" id="countdown">Loading countdown...</div>
+    
+    <p><strong>Planned Features:</strong></p>
+    <ul>
+      <li>Advanced typing lessons & challenges</li>
+      <li>Dark & Light mode support</li>
+      <li>Leaderboard & progress tracking</li>
+      <li>Custom practice modes</li>
+      <li>Offline support & updates</li>
+    </ul>
+
+    <a href="mailto:arman.hasan09424@gmail.com?subject=Notify%20Me&body=I%20want%20to%20be%20notified%20when%20death-type%20X%20launches." target="_blank" class="btn notify">Notify Me</a>
+    <a href="a.Home page.html" class="btn back">Back to Home</a>
+  </div>
+
+  <script>
+    // Countdown Timer
+    const countdown = document.getElementById("countdown");
+    const launchDate = new Date("Oct 30, 2025 10:00:00").getTime();
+
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = launchDate - now;
+
+      if (distance < 0) {
+        clearInterval(interval);
+        countdown.innerHTML = "We are live now!";
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      countdown.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    }, 1000);
+  </script>
+</body>
+</html>
