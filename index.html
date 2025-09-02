@@ -524,21 +524,369 @@ html[data-theme="dark"] #lesson-1 img {
   display: block !important;
 }
 
+/* ================= Sidebar & Hamburger (paste / append) ================= */
+
+/* overlay (scrim) */
+#sidebar-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease;
+  z-index: 69;
+}
+#sidebar-scrim.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* sidebar panel */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: min(320px, 86vw);
+  transform: translateX(-102%);
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  border-right: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  height: 100dvh;
+  overflow-y: auto;
+  z-index: 70;
+  transition: transform .28s ease;
+}
+.sidebar.open { transform: none; }
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-header .logo { width: 32px; height: 32px; border-radius:8px;
+  background:
+    radial-gradient(60% 60% at 30% 30%, var(--brand), transparent),
+    radial-gradient(60% 60% at 70% 70%, var(--brand-2), transparent);
+  box-shadow: var(--glow);
+}
+.sidebar-header h2 { font-size: 1.05rem; margin: 0; }
+
+.sidebar-menu { padding: 10px 10px 16px; }
+.sidebar-menu .section-label { font-size: .85rem; color: var(--muted); padding: 8px 12px 6px; }
+
+/* links */
+.sidebar-menu a,
+.sidebar-menu button.link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  color: var(--text);
+  background: transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .18s ease, border-color .18s ease;
+}
+.sidebar-menu a:hover,
+.sidebar-menu button.link:hover {
+  background: color-mix(in oklab, var(--panel) 86%, transparent);
+  border-color: var(--border);
+}
+
+/* details (lessons) */
+details.lessons { margin: 8px 0; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+details.lessons > summary { list-style: none; cursor: pointer; padding: 12px 14px; background: color-mix(in oklab, var(--panel) 80%, transparent); }
+details.lessons ul { list-style: none; padding: 8px 6px 10px; margin: 0; display: grid; gap: 6px; }
+details.lessons a { padding: 8px 10px; display:block; }
+
+/* settings block */
+.settings { margin-top: 10px; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.settings h3 { margin: 0; padding: 12px 14px; background: color-mix(in oklab, var(--panel) 70%, transparent); border-bottom: 1px solid var(--border); font-size: 1rem; }
+.setting-row { display:flex; align-items:center; justify-content:space-between; gap:10px; padding: 10px 12px; border-bottom: 1px dashed color-mix(in oklab, var(--border) 60%, transparent); }
+.setting-row:last-child { border-bottom: none; }
+
+/* switch */
+.switch { position: relative; width: 46px; height: 26px; }
+.switch input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.slider { position: absolute; inset: 0; background: color-mix(in oklab, var(--panel-2) 60%, transparent); border-radius: 999px; border: 1px solid var(--border); transition: background .18s ease; }
+.slider::after { content: ""; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: var(--muted); transition: transform .18s ease, background .18s ease; }
+.switch input:checked + .slider { background: linear-gradient(90deg, var(--brand), var(--brand-2)); border-color: transparent; }
+.switch input:checked + .slider::after { transform: translateX(20px); background: #fff; }
+
+/* quick actions / footer */
+.sidebar-footer { margin-top: 12px; padding: 14px; border-top: 1px solid var(--border); color: var(--muted); }
+.quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+
+/* hamburger (improved) */
+.hamburger {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:42px; height:42px; border-radius:12px; margin-right:8px;
+  border:1px solid var(--border);
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  box-shadow: var(--shadow-soft);
+  color: var(--text); cursor: pointer;
+  transition: transform .12s ease, filter .12s ease;
+}
+.hamburger:hover { filter: brightness(1.06); }
+.hamburger:active { transform: scale(.97); }
+
+.hamburger .bars { position: relative; width: 20px; height: 14px; display: block; }
+.hamburger .bars::before,
+.hamburger .bars::after,
+.hamburger .bar {
+  content: ""; position: absolute; left: 0; right: 0; height: 2px; border-radius: 2px; background: currentColor;
+}
+.hamburger .bars::before { top: 0; }
+.hamburger .bar { top: 6px; }
+.hamburger .bars::after { bottom: 0; }
+
+/* hide / effects helpers (used by JS) */
+body.hide-wpm .meta .wpm { display: none !important; }
+body.hide-acc .meta .acc { display: none !important; }
+body.hide-err .meta .err { display: none !important; }
+body.effects-off .card.glow { box-shadow: none !important; }
+
+
+/* slide bar serring buttons */
+.setting-row { display: flex; justify-content: space-between; align-items: center; margin: 10px 0;}
+.switch-label { display: flex; justify-content: space-between; align-items: center; width: 100%; cursor: pointer; font-size: 14px; color: var(--text-color, ); /* dark mode default */}
+.switch-input { display: none;}
+.switch-slider { position: relative; width: 44px; height: 24px; background-color: #555; border-radius: 24px; transition: background-color 0.3s ease; margin-left: auto;}
+.switch-slider::before {content: ""; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: transform 0.3s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.4);}
+.switch-input:checked + .switch-slider { background-color: #22c55e; /* green when ON */}
+.switch-input:checked + .switch-slider::before { transform: translateX(20px);}
+
+
+/* Switch design */
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.switch-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-color,);
+}
+
+.switch-input {
+  display: none;
+}
+
+.switch-slider {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background-color: #555;
+  border-radius: 24px;
+  transition: background-color 0.3s ease;
+  margin-left: auto;
+}
+
+.switch-slider::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+.switch-input:checked + .switch-slider {
+  background-color: #22c55e;
+}
+
+.switch-input:checked + .switch-slider::before {
+  transform: translateX(20px);
+}
+
+/* Dropdown buttons */
+.dropdown-toggle {
+  width: 100%;
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 10px 0;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dropdown-toggle .arrow {
+  transition: transform 0.3s ease;
+}
+
+.dropdown-toggle.active .arrow {
+  transform: rotate(90deg);
+}
+
+.dropdown-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+  padding-left: 8px;
+}
+
+.dropdown-content.open {
+  max-height: 600px;
+}
+
+/* Lessons list */
+#lessons-content ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#lessons-content li {
+  display: block;
+  margin: 6px 0;
+}
+
+#lessons-content a {
+  display: block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  color: inherit;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+#lessons-content a:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Dropdown container */
+.dropdown {
+  margin: 8px 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Toggle button */
+.dropdown-toggle {
+  width: 100%;
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px 14px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dropdown-toggle .arrow {
+  transition: transform 0.3s ease;
+}
+
+.dropdown-toggle.active .arrow {
+  transform: rotate(90deg);
+}
+
+/* Collapsible content */
+.dropdown-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+  padding-left: 8px;
+}
+
+.dropdown-content.open {
+  max-height: 800px;
+}
+
+/* Lessons dropdown ko vertical banana */
+#lessons-content ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: block; /* Ensure vertical list */
+}
+
+#lessons-content li {
+  display: block;   /* force each lesson on its own line */
+  margin: 6px 0;    /* thoda gap */
+}
+
+#lessons-content a {
+  display: block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  color: inherit;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+#lessons-content a:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+
+/* Sidebar ko column layout do */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* full height */
+}
+
+/* Menu ko upar wali jagah le lo */
+.sidebar-menu {
+  flex: 1; /* bacha hua space le lega */
+  overflow-y: auto; /* agar content bada ho to scroll ho sake */
+}
+
+/* Footer ko niche fix rakho */
+.sidebar-footer {
+  margin-top: auto; /* footer ko hamesha neeche push karega */
+  padding: 10px;
+  border-top: 1px solid rgba(255,255,255,0.1); /* optional separator */
+}
+
 
 
   </style>
+  <script src="script.js" defer></script>
 </head>
 <body>
-  <!-- ===== HEADER ===== -->
+
+
   <header>
     <div class="container nav">
+      <button id="sidebar-toggle" class="hamburger" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false">
+        <span class="bars" aria-hidden="true"><span class="bar"></span></span>
+      </button>
       <div class="brand" aria-label="death-type X brand">
         <div class="logo" aria-hidden="true"></div>
         <div class="brand-text">death-type X</div>
       </div>
       <nav aria-label="Primary">
         <ul>
-          <li><a class="active" href="#home">Home</a></li>
+          <li><a class="active" href="a.Home page.html">Home</a></li>
           <li><a href="index.html lesson-1.html">Lesson 1</a></li>
           <li><a href="index.html lesson-2.html">Lesson 2</a></li>
           <li><a href="index.html lesson-3.html">Lesson 3</a></li>
@@ -551,12 +899,113 @@ html[data-theme="dark"] #lesson-1 img {
       <a class="cta" href="index.html lesson-1.html" title="Jump to first lesson">
         <!-- play icon -->
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 5v14l11-7L8 5z" stroke="currentColor" stroke-width="1.2"/></svg>
-        Start
+        Next
       </a>
-      <button id="theme-toggle">🌙</button>
 
     </div>
   </header>
+<div id="sidebar-scrim"></div>
+
+<aside id="sidebar" class="sidebar" aria-label="Site menu">
+  <div class="sidebar-header">
+    <div class="logo" aria-hidden="true"></div>
+    <h2>Death-Type X</h2>
+  </div>
+
+  <nav class="sidebar-menu" aria-label="Main">
+    <div class="section-label">Main</div>
+    <a href="index.html" aria-label="Home / Dashboard">🏡 Home </a>
+    <a href="About.html" aria-label="About">🪪 About</a>
+
+    <!-- Lessons Dropdown -->
+    <div class="dropdown">
+      <button class="dropdown-toggle" id="lessons-toggle">
+        📘 Lessons
+        <span class="arrow">▸</span>
+      </button>
+      <div class="dropdown-content" id="lessons-content">
+        <ul>
+          <li><a href="index.html lesson-1.html#ex1">Lesson 1a</a></li>
+          <li><a href="index.html lesson-1.html#ex4">Lesson 1b</a></li>
+          <li><a href="index.html lesson-2.html#ex1">Lesson 2a</a></li>
+          <li><a href="index.html lesson-2.html#ex4">Lesson 2b</a></li>
+          <li><a href="index.html lesson-3.html#ex1">Lesson 3</a></li>
+          <li><a href="index.html lesson-4.html#ex1">Lesson 4</a></li>
+          <li><a href="index.html lesson-5.html#ex1">Lesson 5</a></li>
+          <li><a href="index.html lesson-6.html#ex1">Lesson 6</a></li>
+          <li><a href="index.html lesson-7.html#ex1">Lesson 7</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Settings Dropdown -->
+    <div class="dropdown">
+      <button class="dropdown-toggle" id="settings-toggle">
+        ⚙️ Settings
+        <span class="arrow">▸</span>
+      </button>
+
+      <div class="dropdown-content" id="settings-content">
+        <div class="setting-row">
+          <label class="switch-label">
+            <span class="switch-text">Light Theme</span>
+            <input type="checkbox" id="set-theme" class="switch-input" />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <label class="switch-label">
+            <span class="switch-text">Key Sound</span>
+            <input type="checkbox" id="set-sound" class="switch-input" />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <label class="switch-label">
+            <span class="switch-text">Light Effects (glow)</span>
+            <input type="checkbox" id="set-effects" class="switch-input" />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <label class="switch-label">
+            <span class="switch-text">Show WPM</span>
+            <input type="checkbox" id="set-wpm" class="switch-input" />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <label class="switch-label">
+            <span class="switch-text">Show Accuracy</span>
+            <input type="checkbox" id="set-acc" class="switch-input" />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <label class="switch-label">
+            <span class="switch-text">Show Errors</span>
+            <input type="checkbox" id="set-err" class="switch-input" />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="quick-actions">
+      <button id="btn-collapse" class="btn" type="button">Collapse</button>
+      <button id="btn-reset" class="btn" type="button">Reset Settings</button>
+    </div>
+    <div class="small">Made by <strong>Arman Hasan</strong> • v1.0</div>
+  </div>
+</aside>
+
 
   <!-- ===== MAIN ===== -->
   <main id="home" class="container">
@@ -587,7 +1036,7 @@ html[data-theme="dark"] #lesson-1 img {
       </div>
     </section>
         <section id="lesson-1" class="card fade-in">
-          <img src="homepage keyboard.jpg" alt="image not found">
+          This page is under construction
     </section>
 
     <section class="card fade-in delay-2" aria-labelledby="used-by-heading">
@@ -663,7 +1112,6 @@ html[data-theme="dark"] #lesson-1 img {
         <a class="btn primary" href="#lesson-1">Begin Now</a>
       </div>
     </section>
-
 
   </main>
 

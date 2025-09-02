@@ -38,13 +38,11 @@ document.querySelectorAll("section[id^='ex']").forEach((section) => {
     errEl.textContent = String(errors);
   }
 
-  // sab exercises ke liye
   exercises.forEach((ex) => {
     const box = ex.querySelector(".typing-box");
     const targetEl = ex.querySelector(".target-text");
     const text = targetEl.innerText;
 
-    // typing start
     box.addEventListener("input", () => {
       if (currentExercise !== ex) {
         currentExercise = ex;
@@ -54,12 +52,10 @@ document.querySelectorAll("section[id^='ex']").forEach((section) => {
       calcStats();
     });
 
-    // outline active
     box.addEventListener("focus", () => targetEl.classList.add("active"));
     box.addEventListener("blur", () => targetEl.classList.remove("active"));
   });
 
-  // reset button
   resetBtn.addEventListener("click", () => {
     if (currentExercise) {
       const box = currentExercise.querySelector(".typing-box");
@@ -93,11 +89,13 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ------------------ KEY SOUND EFFECTS ------------------
+window.__soundEnabled = true;
+
 const soundSpecial = new Audio("space.mp3"); // Enter, Space, Backspace
 const soundKeys = new Audio("keys.mp3");     // All other keys
 
-// unlock
 document.addEventListener("click", () => {
+  if (!window.__soundEnabled) return;
   soundSpecial.play().then(() => {
     soundSpecial.pause(); soundSpecial.currentTime = 0;
   }).catch(()=>{});
@@ -108,6 +106,7 @@ document.addEventListener("click", () => {
 
 function playSound(audio) {
   if (!audio) return;
+  if (window.__soundEnabled === false) return;
   audio.currentTime = 0;
   audio.play().catch(() => {});
 }
@@ -126,37 +125,207 @@ const sections = document.querySelectorAll("section.card");
 
 document.querySelectorAll(".typing-box").forEach(input => {
   input.addEventListener("focus", () => {
-    // Sab sections se glow hata do
     sections.forEach(sec => sec.classList.remove("glow"));
-
-    // Jis section me abhi type ho raha hai, uspe glow add karo
     input.closest("section").classList.add("glow");
   });
 });
 
-// script.js
-const toggleBtn = document.getElementById("theme-toggle");
+/* ================= Robust Sidebar + Dropdowns + Settings ================= */
+(function () {
+  // helper localStorage
+  function lsGet(key, fallback = null) { try { const v = localStorage.getItem(key); return v === null ? fallback : v; } catch(e) { return fallback; } }
+  function lsSet(key, value) { try { localStorage.setItem(key, String(value)); } catch(e) {} }
 
-toggleBtn.addEventListener("click", () => {
-  document.body.classList.toggle("light");
+  document.addEventListener('DOMContentLoaded', () => {
+    const sidebar = document.getElementById('sidebar');
+    const scrim = document.getElementById('sidebar-scrim');
+    const sidebarToggleBtn = document.getElementById('sidebar-toggle');
+    const btnCollapse = document.getElementById('btn-collapse');
+    const btnReset = document.getElementById('btn-reset');
 
-  // Save theme in localStorage
-  if (document.body.classList.contains("light")) {
-    localStorage.setItem("theme", "light");
-  } else {
-    localStorage.setItem("theme", "dark");
-  }
+    // fallback: if scrim exists but aria-hidden not set, set it
+    if (scrim && scrim.getAttribute('aria-hidden') === null) {
+      scrim.setAttribute('aria-hidden', 'true');
+    }
+
+    function openSidebar() {
+      sidebar?.classList.add('open');
+      scrim?.classList.add('open');
+      if (sidebarToggleBtn) sidebarToggleBtn.setAttribute('aria-expanded', 'true');
+      if (scrim) scrim.setAttribute('aria-hidden', 'false');
+      try { localStorage.setItem('pref_sidebar', 'open'); } catch(e){}
+    }
+    function closeSidebar() {
+      sidebar?.classList.remove('open');
+      scrim?.classList.remove('open');
+      if (sidebarToggleBtn) sidebarToggleBtn.setAttribute('aria-expanded', 'false');
+      if (scrim) scrim.setAttribute('aria-hidden', 'true');
+      try { localStorage.setItem('pref_sidebar', 'closed'); } catch(e){}
+    }
+
+    // toggle sidebar button (if present)
+    if (sidebarToggleBtn) {
+      sidebarToggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (sidebar?.classList.contains('open')) closeSidebar(); else openSidebar();
+      });
+    }
+
+    // scrim click closes only when clicked on scrim itself
+    if (scrim) {
+      scrim.addEventListener('click', (e) => {
+        if (e.target === scrim) closeSidebar();
+      });
+    }
+
+    // ESC closes
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && sidebar?.classList.contains('open')) closeSidebar();
+    });
+
+    // click outside sidebar closes it (robust)
+    document.addEventListener('click', (e) => {
+      if (!sidebar?.classList.contains('open')) return;
+      if (sidebar.contains(e.target) || (sidebarToggleBtn && sidebarToggleBtn.contains(e.target))) return;
+      closeSidebar();
+    });
+
+    // close sidebar when clicking internal anchor links (anchor jump first)
+    sidebar?.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', () => {
+        setTimeout(() => {
+          if (sidebar?.classList.contains('open')) closeSidebar();
+        }, 80);
+      });
+    });
+
+    /* ---------- Event-delegation for dropdown toggles (robust) ---------- */
+    // This avoids ID timing issues — clicks on any .dropdown-toggle inside sidebar will work.
+    if (sidebar) {
+      sidebar.addEventListener('click', (e) => {
+        const toggle = e.target.closest('.dropdown-toggle');
+        if (!toggle) return;
+
+        e.preventDefault();
+        // infer content id: <id>-toggle => <id>-content
+        let contentId = null;
+        if (toggle.id && toggle.id.endsWith('-toggle')) {
+          contentId = toggle.id.replace(/-toggle$/, '-content');
+        } else {
+          // try data-controls attribute
+          contentId = toggle.getAttribute('data-controls') || toggle.getAttribute('aria-controls');
+        }
+        if (!contentId) return;
+        const content = document.getElementById(contentId);
+        if (!content) return;
+
+        const isOpen = content.classList.toggle('open');
+        toggle.classList.toggle('active', isOpen);
+      });
+    }
+
+    /* ---------- Settings logic (apply/persist) ---------- */
+    const ids = ['set-theme','set-sound','set-effects','set-wpm','set-acc','set-err'];
+
+    function applySetting(id, enabled) {
+      switch (id) {
+        case 'set-theme':
+          document.body.classList.toggle('light', !!enabled);
+          lsSet('theme', enabled ? 'light' : 'dark');
+          lsSet('pref_' + id, !!enabled);
+          break;
+        case 'set-sound':
+          window.__soundEnabled = !!enabled;
+          lsSet('pref_' + id, !!enabled);
+          break;
+        case 'set-effects':
+          document.body.classList.toggle('effects-off', !enabled);
+          lsSet('pref_' + id, !!enabled);
+          break;
+        case 'set-wpm':
+          document.body.classList.toggle('hide-wpm', !enabled);
+          lsSet('pref_' + id, !!enabled);
+          break;
+        case 'set-acc':
+          document.body.classList.toggle('hide-acc', !enabled);
+          lsSet('pref_' + id, !!enabled);
+          break;
+        case 'set-err':
+          document.body.classList.toggle('hide-err', !enabled);
+          lsSet('pref_' + id, !!enabled);
+          break;
+      }
+    }
+
+    // initialize settings (safe: elements might be inside closed dropdown)
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      let saved = null;
+      if (id === 'set-theme') {
+        const legacyTheme = lsGet('theme', null);
+        if (legacyTheme === 'light') saved = 'true';
+        else if (legacyTheme === 'dark') saved = 'false';
+      }
+      if (saved === null) saved = lsGet('pref_' + id, null);
+
+      if (saved === null) {
+        saved = el.checked ? 'true' : 'false';
+      }
+
+      el.checked = (saved === 'true' || saved === true);
+      applySetting(id, el.checked);
+
+      el.addEventListener('change', () => {
+        applySetting(id, el.checked);
+      });
+    });
+
+    // Reset defaults
+    if (btnReset) {
+      btnReset.addEventListener('click', () => {
+        const defaults = {
+          'set-theme': false,
+          'set-sound': true,
+          'set-effects': true,
+          'set-wpm': true,
+          'set-acc': true,
+          'set-err': true
+        };
+        ids.forEach(id => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          const def = defaults[id] === undefined ? false : defaults[id];
+          el.checked = !!def;
+          applySetting(id, el.checked);
+        });
+        setTimeout(() => closeSidebar(), 120);
+      });
+    }
+
+    // persist sidebar initial state
+    const sbState = lsGet('pref_sidebar', null);
+    if (sbState === 'open') openSidebar();
+  });
+})();
+
+
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const sidebar = document.getElementById("sidebar");
+  const scrim = document.getElementById("sidebar-scrim");
+
+  // Sirf lessons ke links ko select karo
+  const lessonLinks = document.querySelectorAll("#lessons-content a");
+
+  lessonLinks.forEach(link => {
+    link.addEventListener("click", () => {
+      // Sidebar band karo
+      sidebar.classList.remove("open");
+      scrim.classList.remove("open");
+    });
+  });
 });
-
-// Refresh ke baad bhi theme yaad rahe
-if (localStorage.getItem("theme") === "light") {
-  document.body.classList.add("light");
-}
-
-
-
-
-
-
-
-

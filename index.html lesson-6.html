@@ -12,6 +12,9 @@
   <!-- ===== HEADER ===== -->
   <header>
     <div class="container nav">
+      <button id="sidebar-toggle" class="hamburger" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false">
+        <span class="bars" aria-hidden="true"><span class="bar"></span></span>
+      </button>
       <div class="brand" aria-label="death-type X brand">
         <div class="logo" aria-hidden="true"></div>
         <div class="brand-text">death-type X</div>
@@ -33,9 +36,110 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 5v14l11-7L8 5z" stroke="currentColor" stroke-width="1.2"/></svg>
         Next
       </a>
-      <button id="theme-toggle">🌙</button>
+
     </div>
   </header>
+<div id="sidebar-scrim"></div>
+
+<aside id="sidebar" class="sidebar" aria-label="Site menu">
+  <div class="sidebar-header">
+    <div class="logo" aria-hidden="true"></div>
+    <h2>Death-Type X</h2>
+  </div>
+
+  <nav class="sidebar-menu" aria-label="Main">
+    <div class="section-label">Main</div>
+    <a href="index.html" aria-label="Home / Dashboard">🏡 Home </a>
+    <a href="About.html" aria-label="About">🪪 About</a>
+
+    <!-- Lessons Dropdown -->
+    <div class="dropdown">
+      <button class="dropdown-toggle" id="lessons-toggle">
+        📘 Lessons
+        <span class="arrow">▸</span>
+      </button>
+      <div class="dropdown-content" id="lessons-content">
+        <ul>
+          <li><a href="index.html lesson-1.html#ex1">Lesson 1a</a></li>
+          <li><a href="index.html lesson-1.html#ex4">Lesson 1b</a></li>
+          <li><a href="index.html lesson-2.html#ex1">Lesson 2a</a></li>
+          <li><a href="index.html lesson-2.html#ex4">Lesson 2b</a></li>
+          <li><a href="index.html lesson-3.html#ex1">Lesson 3</a></li>
+          <li><a href="index.html lesson-4.html#ex1">Lesson 4</a></li>
+          <li><a href="index.html lesson-5.html#ex1">Lesson 5</a></li>
+          <li><a href="index.html lesson-6.html#ex1">Lesson 6</a></li>
+          <li><a href="index.html lesson-7.html#ex1">Lesson 7</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Settings Dropdown -->
+    <div class="dropdown">
+      <button class="dropdown-toggle" id="settings-toggle">
+        ⚙️ Settings
+        <span class="arrow">▸</span>
+      </button>
+
+      <div class="dropdown-content" id="settings-content">
+        <div class="setting-row">
+          <label class="switch-label">
+            <span class="switch-text">Light Theme</span>
+            <input type="checkbox" id="set-theme" class="switch-input" />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <label class="switch-label">
+            <span class="switch-text">Key Sound</span>
+            <input type="checkbox" id="set-sound" class="switch-input" />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <label class="switch-label">
+            <span class="switch-text">Light Effects (glow)</span>
+            <input type="checkbox" id="set-effects" class="switch-input" />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <label class="switch-label">
+            <span class="switch-text">Show WPM</span>
+            <input type="checkbox" id="set-wpm" class="switch-input" />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <label class="switch-label">
+            <span class="switch-text">Show Accuracy</span>
+            <input type="checkbox" id="set-acc" class="switch-input" />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <label class="switch-label">
+            <span class="switch-text">Show Errors</span>
+            <input type="checkbox" id="set-err" class="switch-input" />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="quick-actions">
+      <button id="btn-collapse" class="btn" type="button">Collapse</button>
+      <button id="btn-reset" class="btn" type="button">Reset Settings</button>
+    </div>
+    <div class="small">Made by <strong>Arman Hasan</strong> • v1.0</div>
+  </div>
+</aside>
 
     <main class="container">
     <!-- HERO / TITLE -->
