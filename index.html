@@ -867,9 +867,7 @@ body.effects-off .card.glow { box-shadow: none !important; }
   border-top: 1px solid rgba(255,255,255,0.1); /* optional separator */
 }
 
-
-
-  </style>
+</style>
   <script src="script.js" defer></script>
 </head>
 <body>
@@ -886,7 +884,7 @@ body.effects-off .card.glow { box-shadow: none !important; }
       </div>
       <nav aria-label="Primary">
         <ul>
-          <li><a class="active" href="a.Home page.html">Home</a></li>
+          <li><a class="active" href="index.html">Home</a></li>
           <li><a href="index.html lesson-1.html">Lesson 1</a></li>
           <li><a href="index.html lesson-2.html">Lesson 2</a></li>
           <li><a href="index.html lesson-3.html">Lesson 3</a></li>
@@ -1106,138 +1104,26 @@ body.effects-off .card.glow { box-shadow: none !important; }
       </div>
       <div>
         <h3>Lessons</h3>
-        <ul class="checklist" aria-label="Quick links">
-          <li><a href="#lesson-1">Lesson 1</a></li>
-          <li><a href="#lesson-2">Lesson 2</a></li>
-          <li><a href="#lesson-3">Lesson 3</a></li>
-          <li><a href="#lesson-4">Lesson 4</a></li>
-          <li><a href="#lesson-5">Lesson 5</a></li>
-          <li><a href="#lesson-6">Lesson 6</a></li>
-          <li><a href="#lesson-7">Lesson 7</a></li>
+        <ul style="list-style:none; padding:0;">
+          <li><a href="index.html lesson-1.html#ex1">Lesson 1.1</a></li>
+          <li><a href="index.html lesson-1.html#ex4">Lesson 1.2</a></li>
+          <li><a href="index.html lesson-2.html#ex1">Lesson 2.1</a></li>
+          <li><a href="index.html lesson-2.html#ex4">Lesson 2.2</a></li>
+          <li><a href="index.html lesson-3.html#tdt">Lesson 3</a></li>
+          <li><a href="index.html lesson-4.html#tdt">Lesson 4</a></li>
+          <li><a href="index.html lesson-5.html#tdt">Lesson 5</a></li>
+          <li><a href="index.html lesson-6.html#tdt">Lesson 6</a></li>
+          <li><a href="index.html lesson-7.html#tdt">Lesson 7</a></li>
         </ul>
       </div>
       <div>
         <h3>About</h3>
-        <p class="muted">Dark, advanced theme. Built for speed & focus.</p>
+        <p class="muted">Dark and Light — Built for speed & comfort</p>
       </div>
     </div>
   </footer>
 
-  <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const disclaimer = document.getElementById("disclaimer");
-  const mainContent = document.getElementById("mainContent");
-  const acceptBtn = document.getElementById("acceptBtn");
-
-  // Check if disclaimer was already accepted
-  if (localStorage.getItem("disclaimerAccepted") === "true") {
-    disclaimer.style.display = "none";
-    mainContent.classList.add("reveal");
-  } else {
-    document.body.classList.add("frozen");
-  }
-
-  // On Accept Button Click
-  acceptBtn.addEventListener("click", () => {
-    localStorage.setItem("disclaimerAccepted", "true");
-    disclaimer.style.display = "none";
-    mainContent.classList.add("reveal");
-    document.body.classList.remove("frozen");
-  });
-});
-
-// ----------------------
-// Theme Toggle Script
-// ----------------------
-
-// Get toggle button
-const themeToggleBtn = document.getElementById("theme-toggle");
-
-// Function to switch theme
-function toggleTheme() {
-  document.body.classList.toggle("dark-theme");
-
-  // Save user choice in localStorage
-  if (document.body.classList.contains("dark-theme")) {
-    localStorage.setItem("theme", "dark");
-    themeToggleBtn.textContent = "☀️"; // Show sun icon for light mode option
-  } else {
-    localStorage.setItem("theme", "light");
-    themeToggleBtn.textContent = "🌙"; // Show moon icon for dark mode option
-  }
-}
-
-// Event listener
-if (themeToggleBtn) {
-  themeToggleBtn.addEventListener("click", toggleTheme);
-}
-
-// ----------------------
-// Apply saved theme on load
-// ----------------------
-window.addEventListener("DOMContentLoaded", () => {
-  const savedTheme = localStorage.getItem("theme");
-
-  if (savedTheme === "dark") {
-    document.body.classList.add("dark-theme");
-    themeToggleBtn.textContent = "☀️";
-  } else {
-    document.body.classList.remove("dark-theme");
-    themeToggleBtn.textContent = "🌙";
-  }
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  const toggleBtn = document.getElementById("theme-toggle");
-
-  if (!toggleBtn) return; // agar button nahi mila to kuch mat karo
-
-  // Apply saved theme on load
-  const saved = localStorage.getItem("theme");
-  if (saved === "light") {
-    document.body.classList.add("light");
-    toggleBtn.textContent = "☀️"; // Light mode indicator
-  } else {
-    toggleBtn.textContent = "🌙"; // Dark mode indicator
-  }
-
-  // Toggle theme on button click
-  toggleBtn.addEventListener("click", () => {
-    document.body.classList.toggle("light");
-    const isLight = document.body.classList.contains("light");
-
-    // Save preference
-    localStorage.setItem("theme", isLight ? "light" : "dark");
-
-    // Update button icon
-    toggleBtn.textContent = isLight ? "☀️" : "🌙";
-  });
-});
-
-// Theme toggle button dhundo
-const themeToggle = document.getElementById("theme-toggle");
-
-// Agar pehle se theme saved hai to load karo
-if (localStorage.getItem("theme")) {
-  document.documentElement.setAttribute("data-theme", localStorage.getItem("theme"));
-}
-
-// Button click pe theme badlo
-themeToggle.addEventListener("click", () => {
-  let currentTheme = document.documentElement.getAttribute("data-theme");
-
-  if (currentTheme === "dark") {
-    document.documentElement.setAttribute("data-theme", "light");
-    localStorage.setItem("theme", "light");
-  } else {
-    document.documentElement.setAttribute("data-theme", "dark");
-    localStorage.setItem("theme", "dark");
-  }
-});
-
-
-
-  </script>
+  
 
 </body>
 </html>
