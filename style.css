@@ -627,6 +627,77 @@ body.effects-off .card.glow { box-shadow: none !important; }
 
 
 
+/* ================== Mobile Responsive Adjustments ================== */
+
+/* Chhoti screens ke liye (tablets & phones) */
+@media (max-width: 768px) {
+  .container {
+    width: 94vw;   /* thoda aur chhoda */
+    padding: 0 10px;
+  }
+
+  /* Navbar ko column ya wrap banado */
+  .nav {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  nav ul {
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: center;
+  }
+  nav a {
+    padding: 6px 10px;
+    font-size: 0.9rem;
+  }
+
+  /* Hero section text center align */
+  .hero {
+    text-align: center;
+    padding: 28px 0 8px;
+  }
+  h1.title {
+    font-size: clamp(1.6rem, 6vw, 2.2rem);
+  }
+  .subtitle {
+    max-width: 90%;
+    margin: 0 auto;
+    font-size: 0.95rem;
+  }
+
+  /* Cards grid ko ek column me kar do */
+  .grid.cols-2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Sidebar width thodi kam kar do */
+  .sidebar {
+    width: min(280px, 88vw);
+  }
+
+  /* Typing box height adjust */
+  .typing-box {
+    height: 48px;
+    font-size: 15px;
+  }
+
+  /* Keyboard hints chhote screen par stack ho jaye */
+  .kbd-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .kbd {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+  }
+
+  /* Footer ko ek column bana do */
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    text-align: center;
+  }
+}
 
 
 
