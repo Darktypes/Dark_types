@@ -1,6 +1,4 @@
-// =============================
-// Typing Exercises (Stats, WPM, Accuracy, Errors)
-// =============================
+// ------------------ MULTI EXERCISE SUPPORT ------------------
 document.querySelectorAll("section[id^='ex']").forEach((section) => {
   const exercises = section.querySelectorAll('.exercise');
   const meta = section.querySelector('.meta');
@@ -71,9 +69,7 @@ document.querySelectorAll("section[id^='ex']").forEach((section) => {
   });
 });
 
-// =============================
-// Enter -> next box jump
-// =============================
+// ------------------ ENTER → NEXT BOX JUMP ------------------
 document.addEventListener("DOMContentLoaded", () => {
   const boxes = document.querySelectorAll(".typing-box");
 
@@ -81,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
     box.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
+
         if (boxes[i + 1]) {
           boxes[i + 1].focus();
           const len = boxes[i + 1].value.length;
@@ -91,11 +88,51 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// =============================
-// Sidebar + Dropdowns + Settings
-// (kept robust & as before — persistence + event delegation)
-// =============================
+// ------------------ KEY SOUND EFFECTS ------------------
+window.__soundEnabled = true;
+
+const soundSpecial = new Audio("space.mp3"); // Enter, Space, Backspace
+const soundKeys = new Audio("keys.mp3");     // All other keys
+
+document.addEventListener("click", () => {
+  if (!window.__soundEnabled) return;
+  soundSpecial.play().then(() => {
+    soundSpecial.pause(); soundSpecial.currentTime = 0;
+  }).catch(()=>{});
+  soundKeys.play().then(() => {
+    soundKeys.pause(); soundKeys.currentTime = 0;
+  }).catch(()=>{});
+}, { once: true });
+
+function playSound(audio) {
+  if (!audio) return;
+  if (window.__soundEnabled === false) return;
+  audio.currentTime = 0;
+  audio.play().catch(() => {});
+}
+
+document.querySelectorAll(".typing-box").forEach((box) => {
+  box.addEventListener("keydown", (e) => {
+    if (e.key === " " || e.key === "Enter" || e.key === "Backspace") {
+      playSound(soundSpecial);
+    } else {
+      playSound(soundKeys);
+    }
+  });
+});
+
+const sections = document.querySelectorAll("section.card");
+
+document.querySelectorAll(".typing-box").forEach(input => {
+  input.addEventListener("focus", () => {
+    sections.forEach(sec => sec.classList.remove("glow"));
+    input.closest("section").classList.add("glow");
+  });
+});
+
+/* ================= Robust Sidebar + Dropdowns + Settings ================= */
 (function () {
+  // helper localStorage
   function lsGet(key, fallback = null) { try { const v = localStorage.getItem(key); return v === null ? fallback : v; } catch(e) { return fallback; } }
   function lsSet(key, value) { try { localStorage.setItem(key, String(value)); } catch(e) {} }
 
@@ -106,21 +143,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnCollapse = document.getElementById('btn-collapse');
     const btnReset = document.getElementById('btn-reset');
 
+    // fallback: if scrim exists but aria-hidden not set, set it
+    if (scrim && scrim.getAttribute('aria-hidden') === null) {
+      scrim.setAttribute('aria-hidden', 'true');
+    }
+
     function openSidebar() {
       sidebar?.classList.add('open');
       scrim?.classList.add('open');
       if (sidebarToggleBtn) sidebarToggleBtn.setAttribute('aria-expanded', 'true');
       if (scrim) scrim.setAttribute('aria-hidden', 'false');
-      lsSet('pref_sidebar', 'open');
+      try { localStorage.setItem('pref_sidebar', 'open'); } catch(e){}
     }
     function closeSidebar() {
       sidebar?.classList.remove('open');
       scrim?.classList.remove('open');
       if (sidebarToggleBtn) sidebarToggleBtn.setAttribute('aria-expanded', 'false');
       if (scrim) scrim.setAttribute('aria-hidden', 'true');
-      lsSet('pref_sidebar', 'closed');
+      try { localStorage.setItem('pref_sidebar', 'closed'); } catch(e){}
     }
 
+    // toggle sidebar button (if present)
     if (sidebarToggleBtn) {
       sidebarToggleBtn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -128,22 +171,26 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
+    // scrim click closes only when clicked on scrim itself
     if (scrim) {
       scrim.addEventListener('click', (e) => {
         if (e.target === scrim) closeSidebar();
       });
     }
 
+    // ESC closes
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && sidebar?.classList.contains('open')) closeSidebar();
     });
 
+    // click outside sidebar closes it (robust)
     document.addEventListener('click', (e) => {
       if (!sidebar?.classList.contains('open')) return;
       if (sidebar.contains(e.target) || (sidebarToggleBtn && sidebarToggleBtn.contains(e.target))) return;
       closeSidebar();
     });
 
+    // close sidebar when clicking internal anchor links (anchor jump first)
     sidebar?.querySelectorAll('a[href^="#"]').forEach(a => {
       a.addEventListener('click', () => {
         setTimeout(() => {
@@ -152,54 +199,90 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    sidebar?.addEventListener('click', (e) => {
-      const toggle = e.target.closest('.dropdown-toggle');
-      if (!toggle) return;
-      e.preventDefault();
+    /* ---------- Event-delegation for dropdown toggles (robust) ---------- */
+    // This avoids ID timing issues — clicks on any .dropdown-toggle inside sidebar will work.
+    if (sidebar) {
+      sidebar.addEventListener('click', (e) => {
+        const toggle = e.target.closest('.dropdown-toggle');
+        if (!toggle) return;
 
-      const contentId = toggle.id.replace(/-toggle$/, "-content");
-      const content = document.getElementById(contentId);
-      if (!content) return;
+        e.preventDefault();
+        // infer content id: <id>-toggle => <id>-content
+        let contentId = null;
+        if (toggle.id && toggle.id.endsWith('-toggle')) {
+          contentId = toggle.id.replace(/-toggle$/, '-content');
+        } else {
+          // try data-controls attribute
+          contentId = toggle.getAttribute('data-controls') || toggle.getAttribute('aria-controls');
+        }
+        if (!contentId) return;
+        const content = document.getElementById(contentId);
+        if (!content) return;
 
-      const isOpen = content.classList.toggle('open');
-      toggle.classList.toggle('active', isOpen);
-    });
+        const isOpen = content.classList.toggle('open');
+        toggle.classList.toggle('active', isOpen);
+      });
+    }
 
+    /* ---------- Settings logic (apply/persist) ---------- */
     const ids = ['set-theme','set-sound','set-effects','set-wpm','set-acc','set-err'];
+
     function applySetting(id, enabled) {
       switch (id) {
         case 'set-theme':
           document.body.classList.toggle('light', !!enabled);
           lsSet('theme', enabled ? 'light' : 'dark');
+          lsSet('pref_' + id, !!enabled);
           break;
         case 'set-sound':
           window.__soundEnabled = !!enabled;
+          lsSet('pref_' + id, !!enabled);
           break;
         case 'set-effects':
           document.body.classList.toggle('effects-off', !enabled);
+          lsSet('pref_' + id, !!enabled);
           break;
         case 'set-wpm':
           document.body.classList.toggle('hide-wpm', !enabled);
+          lsSet('pref_' + id, !!enabled);
           break;
         case 'set-acc':
           document.body.classList.toggle('hide-acc', !enabled);
+          lsSet('pref_' + id, !!enabled);
           break;
         case 'set-err':
           document.body.classList.toggle('hide-err', !enabled);
+          lsSet('pref_' + id, !!enabled);
           break;
       }
-      lsSet('pref_' + id, !!enabled);
     }
 
+    // initialize settings (safe: elements might be inside closed dropdown)
     ids.forEach(id => {
       const el = document.getElementById(id);
       if (!el) return;
-      let saved = lsGet('pref_' + id, el.checked);
-      el.checked = (saved === true || saved === 'true');
+
+      let saved = null;
+      if (id === 'set-theme') {
+        const legacyTheme = lsGet('theme', null);
+        if (legacyTheme === 'light') saved = 'true';
+        else if (legacyTheme === 'dark') saved = 'false';
+      }
+      if (saved === null) saved = lsGet('pref_' + id, null);
+
+      if (saved === null) {
+        saved = el.checked ? 'true' : 'false';
+      }
+
+      el.checked = (saved === 'true' || saved === true);
       applySetting(id, el.checked);
-      el.addEventListener('change', () => applySetting(id, el.checked));
+
+      el.addEventListener('change', () => {
+        applySetting(id, el.checked);
+      });
     });
 
+    // Reset defaults
     if (btnReset) {
       btnReset.addEventListener('click', () => {
         const defaults = {
@@ -213,93 +296,36 @@ document.addEventListener("DOMContentLoaded", () => {
         ids.forEach(id => {
           const el = document.getElementById(id);
           if (!el) return;
-          el.checked = defaults[id];
+          const def = defaults[id] === undefined ? false : defaults[id];
+          el.checked = !!def;
           applySetting(id, el.checked);
         });
         setTimeout(() => closeSidebar(), 120);
       });
     }
 
-    if (lsGet('pref_sidebar') === 'open') openSidebar();
+    // persist sidebar initial state
+    const sbState = lsGet('pref_sidebar', null);
+    if (sbState === 'open') openSidebar();
   });
 })();
 
-// =============================
-// Typing sounds + Beep on wrong key
-// - Key Sound toggle controls everything (normal key fx + beep)
-// - Backspace/Enter/Arrows/Modifiers ignored for beep
-// - Printable wrong char -> beep (no duplicate normal fx)
-// =============================
+
+
+
+
 document.addEventListener("DOMContentLoaded", () => {
-  // ensure a global flag (may be set by applySetting earlier)
-  if (typeof window.__soundEnabled === "undefined") window.__soundEnabled = true;
+  const sidebar = document.getElementById("sidebar");
+  const scrim = document.getElementById("sidebar-scrim");
 
-  // audio assets (ensure these paths exist in your project)
-  const specialSound = new Audio("space.mp3"); // space/enter/backspace special
-  const keySound = new Audio("keys.mp3");      // normal key sound
-  const beep = new Audio("sound/beep-sound.mp3"); // wrong char beep
+  // Sirf lessons ke links ko select karo
+  const lessonLinks = document.querySelectorAll("#lessons-content a");
 
-  // preload
-  [specialSound, keySound, beep].forEach(a => { try { a.preload = "auto"; } catch(e){} });
-
-  // one user click to unlock browsers that block autoplay sound
-  document.addEventListener("click", () => {
-    try {
-      specialSound.play().then(()=>{ specialSound.pause(); specialSound.currentTime = 0; }).catch(()=>{});
-      keySound.play().then(()=>{ keySound.pause(); keySound.currentTime = 0; }).catch(()=>{});
-      beep.play().then(()=>{ beep.pause(); beep.currentTime = 0; }).catch(()=>{});
-    } catch(e){}
-  }, { once: true });
-
-  function playIfEnabled(audio) {
-    if (!window.__soundEnabled) return;
-    try { audio.currentTime = 0; audio.play().catch(()=>{}); } catch (e) {}
-  }
-
-  // keys to ignore for beep
-  const ignoreForBeep = new Set(["Backspace","Delete","Tab","Enter","Shift","Alt","Control","Meta","ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Home","End"]);
-
-  // attach single keydown handler per typing box (handles normal fx + beep)
-  document.querySelectorAll(".exercise .typing-box").forEach((typingBox) => {
-    const targetText = typingBox.closest(".exercise").querySelector(".target-text")?.textContent || "";
-
-    typingBox.addEventListener("keydown", (e) => {
-      // let Enter->next handler (already exists) run; we skip special handling here for Enter
-      if (e.key === "Enter") return;
-
-      // special keys / modifiers: do special sound (space/backspace/enter handled below)
-      if (ignoreForBeep.has(e.key)) {
-        // but still provide normal feedback for Backspace/Space/Enter if sounds enabled
-        if ((e.key === "Backspace" || e.key === "Delete") && window.__soundEnabled) {
-          playIfEnabled(specialSound);
-        }
-        return;
-      }
-
-      // only single-character printable keys reach here (like 'a','1', etc.)
-      if (e.key.length !== 1) return;
-
-      // live check toggle
-      if (!window.__soundEnabled) return;
-
-      // caret pos
-      const pos = typingBox.selectionStart ?? typingBox.value.length;
-      const expected = targetText[pos];
-
-      // if we are beyond expected text, treat as normal key (no beep)
-      if (expected === undefined) {
-        playIfEnabled(keySound);
-        return;
-      }
-
-      // wrong printable character -> beep (do not play normal key sound)
-      if (e.key !== expected) {
-        playIfEnabled(beep);
-        return;
-      }
-
-      // correct printable character -> normal key sound
-      playIfEnabled(keySound);
+  lessonLinks.forEach(link => {
+    link.addEventListener("click", () => {
+      // Sidebar band karo
+      sidebar.classList.remove("open");
+      scrim.classList.remove("open");
     });
   });
 });
