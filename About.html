@@ -1,11 +1,214 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About — Arman Hasan | Dark Types</title>
+  <meta name="description" content="About Arman Hasan — a 10th class student building Dark Types to provide free skills and resources for learners." />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-1: #061019; /* deep navy */
+      --bg-2: #0f1720; /* dark slate */
+      --card: rgba(255,255,255,0.03);
+      --muted: #9aa4af;
+      --accent: #22d3ee; /* cyan */
+      --accent-2: #3b82f6; /* blue */
+      --glass: rgba(255,255,255,0.04);
+      --radius: 14px;
+      --max-width: 1100px;
+    }
+
+    /* Reset + base */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      color: #e6eef6;
+      background: radial-gradient(1200px 700px at 10% 10%, rgba(34,211,238,0.06), transparent),
+                  radial-gradient(1200px 700px at 90% 90%, rgba(59,130,246,0.04), transparent),
+                  linear-gradient(180deg,var(--bg-1), var(--bg-2));
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:40px 20px;
+    }
+
+    .page{max-width:var(--max-width);margin:0 auto;display:grid;grid-template-columns:1fr 400px;gap:40px;align-items:start}
+
+    /* Hero */
+    .hero{grid-column:1 / -1;display:flex;flex-direction:column;gap:18px;margin-bottom:6px}
+    .eyebrow{color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:1px;font-size:12px}
+    .title{
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 5vw, 46px);
+      line-height:1.02;
+      margin:0;
+      font-weight:700;
+      color:transparent;
+      background-image: linear-gradient(90deg,var(--accent-2), var(--accent));
+      -webkit-background-clip:text;
+      background-clip:text;
+      text-wrap:balance;
+    }
+    .subtitle{color:var(--muted);max-width:900px;font-size:16px}
+
+    /* Main content */
+    main{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:28px;border-radius:var(--radius);backdrop-filter: blur(6px);box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+
+    h2{font-size:20px;margin:0 0 10px 0;color:#f4f7fb}
+    p{color: #dbeaf6;margin:0 0 14px 0}
+
+    .meta{color:var(--muted);font-size:14px;margin-bottom:14px}
+
+    /* Timeline column */
+    aside{position:relative}
+    .card{background:var(--card);padding:18px;border-radius:12px;}
+
+    .timeline{margin-top:8px;position:relative;padding-left:28px}
+    .timeline::before{content:"";position:absolute;left:12px;top:0;width:3px;height:100%;background:linear-gradient(var(--accent-2), var(--accent));border-radius:6px;opacity:0.9}
+    .event{position:relative;margin-bottom:22px;padding-left:20px}
+    .event::before{content:"";position:absolute;left:-6px;top:4px;width:14px;height:14px;border-radius:50%;background:linear-gradient(180deg,var(--accent),var(--accent-2));box-shadow:0 0 12px rgba(34,211,238,0.12)}
+    .event .date{font-size:13px;color:var(--muted);margin-bottom:6px}
+    .event .desc{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;color:#dbeaf6}
+
+    /* Buttons */
+    .cta-row{display:flex;gap:10px;margin-top:10px}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent-2),var(--accent));color:#021226;text-decoration:none;font-weight:600;border:none;cursor:pointer}
+    .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(255,255,255,0.06)}
+
+    /* Small helpers */
+    .muted{color:var(--muted)}
+    .small{font-size:14px}
+    footer{grid-column:1 / -1;text-align:center;color:var(--muted);margin-top:18px}
+
+    /* Reveal animations */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease, transform .6s ease}
+    .reveal.visible{opacity:1;transform:none}
+
+    /* Responsive */
+    @media (max-width:980px){
+      .page{grid-template-columns:1fr;}
+      aside{order:2}
+      main{order:1}
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .reveal{transition:none}
+    }
+  </style>
 </head>
 <body>
-    <p>Coming soon</p>
+  <!--
+    About Page — Single-file HTML/CSS/JS
+    - Replace mailto: and social links below with your real addresses
+    - Edit timeline events to match your personal update log
+  -->
+
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">About</div>
+      <h1 class="title">Making learning free, practical, and accessible</h1>
+      <p class="subtitle">My name is <strong>Arman Hasan</strong>. I am a 10th class student from a middle-class family. This website is a single-handed project built by me — not by a company or team. My purpose is to provide free, useful skills and resources to students and learners so they can improve without paying for costly courses.</p>
+    </header>
+
+    <!-- LEFT: Main content -->
+    <main class="reveal" id="main-content" tabindex="0" aria-labelledby="about-heading">
+      <h2 id="about-heading">Who built this</h2>
+      <p class="meta">Built single-handedly by <strong>Arman Hasan</strong> — a motivated student committed to open access learning.</p>
+
+      <section aria-labelledby="purpose-heading" class="reveal">
+        <h2 id="purpose-heading">Purpose</h2>
+        <p>My goal is to <strong>provide free skills and resources</strong> — to help learners improve typing, basic coding, and practical digital skills that are useful in studies and future jobs. I design lessons and practice tools that are simple, step-by-step, and focused on real improvement.</p>
+      </section>
+
+      <section aria-labelledby="story-heading" class="reveal">
+        <h2 id="story-heading">My story</h2>
+        <p>I come from a modest background and have faced limitations in resources and guidance. Rather than accept those limits, I turned my learning into a project to help others. This website is the result of long hours of learning, testing and building — to share everything I found useful with fellow students.</p>
+      </section>
+
+      <section aria-labelledby="vision-heading" class="reveal">
+        <h2 id="vision-heading">Vision & commitment</h2>
+        <p>I regularly update this website with new lessons, features, and improvements so that it stays practical and easy to use. With time and support, I want this platform to become a reliable learning hub where students can build skills step-by-step, without stress.</p>
+
+        <div class="cta-row">
+          <a class="btn" href="arman.hasan09424@gmail.com" title="Send me an email">Get in touch</a>
+          <button class="btn ghost" onclick="copySupportEmail()" title="Copy support email">Copy my email</button>
+        </div>
+
+        <p class="small muted" style="margin-top:10px">I welcome feedback, suggestions, and support — every message helps me improve the site and make learning easier for more students.</p>
+      </section>
+    </main>
+
+    <!-- RIGHT: Timeline / Updates -->
+    <aside class="card reveal" id="timeline">
+      <h2>Update Log</h2>
+      <p class="muted small">A quick timeline of the site's progress — you can add new entries as the site grows.</p>
+
+      <div class="timeline">
+        <div class="event">
+          <div class="date">2022</div>
+          <div class="desc">Started learning HTML, built first practice pages and small exercises for typing.</div>
+        </div>
+
+        <div class="event">
+          <div class="date">2024</div>
+          <div class="desc">Launched Dark Types — a focused, distraction-free typing practice platform and first public release.</div>
+        </div>
+
+        <div class="event">
+          <div class="date">2025</div>
+          <div class="desc">Added dashboards, progress tracking and planning for CSS lessons. Working on accessibility and mobile improvements.</div>
+        </div>
+
+        <div class="event">
+          <div class="date">Latest</div>
+          <div class="desc">Continuously updating content, adding new lessons and features. Visit regularly to see new improvements.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px" class="muted small">Tip: copy an event block and edit the year + description to keep this timeline up to date.</div>
+    </aside>
+
+    <footer class="reveal">© <span id="year"></span> Dark Types — Created single-handedly by <strong>Arman Hasan</strong>. All content free for learners.</footer>
+  </div>
+
+  <script>
+    // Auto year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Scroll reveal using IntersectionObserver
+    (function(){
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting){
+            e.target.classList.add('visible');
+            io.unobserve(e.target);
+          }
+        })
+      },{threshold:0.12});
+
+      document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+    })();
+
+    // Copy support email helper
+    function copySupportEmail(){
+      const email = 'arman.hasan09424@gmail.com'; 
+      navigator.clipboard?.writeText(email).then(()=>{
+        const btn = event.currentTarget;
+        const prev = btn.innerText;
+        btn.innerText = 'Copied!';
+        setTimeout(()=> btn.innerText = prev, 1400);
+      }).catch(()=>{
+        alert('Copy failed. Please copy manually: ' + email);
+      });
+    }
+
+    // Accessibility: keyboard focus ring
+    document.addEventListener('keyup', function(e){
+      if(e.key === 'Tab') document.body.classList.add('show-focus');
+    });
+  </script>
 </body>
 </html>

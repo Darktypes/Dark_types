@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contact — Arman Hasan</title>
+  <meta name="description" content="Contact Arman Hasan via a simple Web3Forms-powered form." />
+  <meta name="theme-color" content="#ffffff"/>
+  <meta property="og:title" content="Contact — Arman Hasan"/>
+  <meta property="og:description" content="Contact Arman Hasan via a simple Web3Forms-powered form."/>
+  <meta property="og:type" content="website"/>
+  <link rel="icon" href="/favicon.ico"/>
+  <link rel="preconnect" href="https://web3forms.com" crossorigin>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<div class="site">
+<header class="header">
+  <div class="container nav">
+    <a class="brand" href="index.html" aria-label="Arman Hasan home">
+      <span class="brand-mark">A</span><span class="brand-text">Arman Hasan</span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-label="Open menu" id="navToggle">☰</button>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="terms.html">Terms</a>
+      <a href="privacy.html">Privacy</a>
+    </nav>
+  </div>
+</header>
+<main class="main container">
+
+<section class="section">
+  <h1>Contact</h1>
+  <p class="muted">Have feedback, ideas, or collaboration requests? Use the form below or email me at <a href="mailto:arman.hasan09424@gmail.com">arman.hasan09424@gmail.com</a>.</p>
+
+  <form class="form" action="https://api.web3forms.com/submit" method="POST">
+    <!-- REQUIRED: Replace with your real access key from Web3Forms dashboard -->
+    <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE">
+
+    <!-- Email subject & from name as they appear in your inbox -->
+    <input type="hidden" name="subject" value="New message from Arman Hasan website">
+    <input type="hidden" name="from_name" value="Arman Hasan — Website Contact">
+
+    <!-- Optional: redirect to a Thank You page on success -->
+    <input type="hidden" name="redirect" value="https://example.com/thanks.html">
+
+    <!-- Recommended anti-spam -->
+    <input type="checkbox" name="botcheck" class="hidden" style="display:none;">
+
+    <!-- hCaptcha (zero-config). Requires the script at end of page. -->
+    <div class="h-captcha" data-captcha="true"></div>
+
+    <div class="grid form-grid">
+      <div class="field">
+        <label for="name">Your name</label>
+        <input id="name" name="name" type="text" placeholder="Full name" required>
+      </div>
+      <div class="field">
+        <label for="email">Your email</label>
+        <input id="email" name="email" type="email" placeholder="name@example.com" required>
+      </div>
+      <div class="field full">
+        <label for="subject">Subject</label>
+        <input id="subject" name="User Subject" type="text" placeholder="How can I help?" required>
+      </div>
+      <div class="field full">
+        <label for="message">Message</label>
+        <textarea id="message" name="message" rows="6" placeholder="Write your message..." required></textarea>
+      </div>
+    </div>
+    <button class="btn primary" type="submit">Send message</button>
+    <p id="formNote" class="muted small">This form is powered by Web3Forms. By submitting, you agree to the <a href="privacy.html">Privacy Policy</a>.</p>
+  </form>
+</section>
+
+<!-- Required for hCaptcha with Web3Forms -->
+<script src="https://web3forms.com/client/script.js" async defer></script>
+
+</main>
+<footer class="footer">
+  <div class="container footer-grid">
+    <div>
+      <div class="brand-row">
+        <span class="brand-mark">A</span><span class="brand-text">Arman Hasan</span>
+      </div>
+      <p class="muted">Free, practical learning resources for students — built and maintained by Arman Hasan.</p>
+      <p class="muted">Contact: <a href="mailto:arman.hasan09424@gmail.com">arman.hasan09424@gmail.com</a></p>
+    </div>
+    <nav>
+      <h4>Site</h4>
+      <ul class="list">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="terms.html">Terms</a></li>
+        <li><a href="privacy.html">Privacy</a></li>
+      </ul>
+    </nav>
+    <div>
+      <h4>Legal</h4>
+      <ul class="list">
+        <li><a href="terms.html">Terms & Conditions</a></li>
+        <li><a href="privacy.html">Privacy Policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footbar">
+    <p>© <span id="year">2025</span> Arman Hasan. All rights reserved.</p>
+  </div>
+</footer>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
