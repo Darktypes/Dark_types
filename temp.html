@@ -1,120 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-     <link rel="stylesheet" href="style.css">
- <script src="script.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dark Types AI Notification</title>
+<style>
+body { background-color: black;}
+/* --- Particle background container --- */
+#particle-container {
+  position: fixed;
+  bottom: 0; right: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 9998;
+}
+
+/* --- Notification Box --- */
+#notify-box {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  background: rgba(10,25,50,0.85);
+  color: #0ff;
+  padding: 20px 25px;
+  border-radius: 15px;
+  border: 1px solid #0ff;
+  min-width: 300px;
+  max-width: 400px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: none;
+  text-shadow: 0 0 8px #0ff, 0 0 12px #0ff;
+  box-shadow: 0 0 15px #0ff, 0 0 30px #0ff inset;
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+/* Hover effect */
+#notify-box:hover {
+  box-shadow: 0 0 25px #0ff, 0 0 50px #0ff inset;
+  transform: scale(1.05);
+}
+
+/* Swipe animations */
+#notify-box.show {
+  display: block;
+  animation: swipeIn 0.7s cubic-bezier(.68,-0.55,.265,1.55) forwards, pulseGlow 1.5s ease-in-out infinite alternate;
+}
+#notify-box.hide {
+  animation: swipeOut 0.5s ease forwards;
+}
+
+/* Swipe In Right → Left */
+@keyframes swipeIn {
+  from { transform: translateX(120%) scale(0.9); opacity: 0; }
+  to { transform: translateX(0) scale(1); opacity: 1; }
+}
+
+/* Swipe Out Left → Right */
+@keyframes swipeOut {
+  from { transform: translateX(0) scale(1); opacity: 1; }
+  to { transform: translateX(120%) scale(0.9); opacity: 0; }
+}
+
+/* Neon pulse */
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 15px #0ff, 0 0 30px #0ff inset; }
+  50% { box-shadow: 0 0 25px #0ff, 0 0 50px #0ff inset; }
+  100% { box-shadow: 0 0 15px #0ff, 0 0 30px #0ff inset; }
+}
+
+/* Typewriter effect */
+.typewriter span {
+  display: inline-block;
+  opacity: 0;
+  transform: translateX(5px);
+  animation: typeChar 0.05s forwards;
+}
+@keyframes typeChar {
+  to { opacity: 1; transform: translateX(0); }
+}
+
+#notify-box {
+  word-break: break-word;       /* Proper word wrapping */
+  white-space: pre-wrap;        /* Preserve new lines */
+  overflow-y: auto;             /* Enable vertical scroll if text too long */
+  max-height: 80vh;             /* Keep box visible on screen */
+}
+
+</style>
 </head>
 <body>
-  <button id="theme-toggle">🌙</button>
 
+<canvas id="particle-container"></canvas>
 
-<section class="card fade-in" id="instructions">
-  <h2 style="text-align: center;">Exercises - 2 and 3 <br> <b>Home row hints</b></h2>
+<div id="notify-box"><div class="typewriter"></div></div>
+<audio id="notify-sound" src="Creator.mp3" preload="auto"></audio>
 
-  <!-- Full Keyboard -->
-  <div class="keyboard" role="group" aria-label="Keyboard">
+<button onclick="startIntro()" style="margin:30px;padding:10px 20px;">▶️ Start AI Intro</button>
+<button onclick="stopIntro()" style="margin:30px;padding:10px 20px;">⏹ Stop AI Intro</button>
 
-    <!-- Number row -->
-    <div class="kbd-row">
-      <span class="kbd"><span class="finger4">~</span></span>
-      <span class="kbd"><span class="finger4">1</span></span>
-      <span class="kbd"><span class="finger3">2</span></span>
-      <span class="kbd"><span class="finger2">3</span></span>
-      <span class="kbd"><span class="finger1">4</span></span>
-      <span class="kbd"><span class="finger1">5</span></span>
-      <span class="kbd"><span class="finger1">6</span></span>
-      <span class="kbd"><span class="finger1">7</span></span>
-      <span class="kbd"><span class="finger2">8</span></span>
-      <span class="kbd"><span class="finger3">9</span></span>
-      <span class="kbd"><span class="finger4">0</span></span>
-      <span class="kbd"><span class="finger4">-</span></span>
-      <span class="kbd"><span class="finger4">=</span></span>
-      <span class="kbd wide"><span class="finger4">Backspace</span></span>
-    </div>
+<script>
+// --- Particle background ---
+const canvas = document.getElementById('particle-container');
+const ctx = canvas.getContext('2d');
+canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+const particles=[];
+for(let i=0;i<70;i++){
+  particles.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*3+1, vx:(Math.random()-0.5)*0.5, vy:(Math.random()-0.5)*0.5});
+}
+function animateParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{
+    p.x+=p.vx; p.y+=p.vy;
+    if(p.x>canvas.width)p.x=0; if(p.x<0)p.x=canvas.width;
+    if(p.y>canvas.height)p.y=0; if(p.y<0)p.y=canvas.height;
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle='rgba(0,255,255,0.5)'; ctx.fill();
+  });
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+window.addEventListener('resize',()=>{canvas.width=window.innerWidth; canvas.height=window.innerHeight;});
 
-    <!-- Q row -->
-    <div class="kbd-row">
-      <span class="kbd wide"><span class="finger4">Tab</span></span>
-      <span class="kbd"><span class="finger4">Q</span></span>
-      <span class="kbd"><span class="finger3">W</span></span>
-      <span class="kbd"><span class="finger2">E</span></span>
-      <span class="kbd"><span class="finger1">R</span></span>
-      <span class="kbd"><span class="finger1">T</span></span>
-      <span class="kbd"><span class="finger1">Y</span></span>
-      <span class="kbd"><span class="finger1">U</span></span>
-      <span class="kbd"><span class="finger2">I</span></span>
-      <span class="kbd"><span class="finger3">O</span></span>
-      <span class="kbd"><span class="finger4">P</span></span>
-      <span class="kbd"><span class="finger4">[</span></span>
-      <span class="kbd"><span class="finger4">]</span></span>
-      <span class="kbd"><span class="finger4">\</span></span>
-    </div>
+// --- Notification ---
+const box=document.getElementById('notify-box');
+const typewriterDiv=box.querySelector('.typewriter');
+const sound=document.getElementById('notify-sound');
 
-    <!-- A row -->
-    <div class="kbd-row">
-      <span class="kbd wide"><span class="finger4">Caps</span></span>
-      <span class="kbd hl"><span class="finger4">A</span></span>
-      <span class="kbd hl"><span class="finger3">S</span></span>
-      <span class="kbd hl"><span class="finger2">D</span></span>
-      <span class="kbd hl"><span class="finger1">F</span></span>
-      <span class="kbd"><span class="finger1">G</span></span>
-      <span class="kbd"><span class="finger1">H</span></span>
-      <span class="kbd hl"><span class="finger1">J</span></span>
-      <span class="kbd hl"><span class="finger2">K</span></span>
-      <span class="kbd hl"><span class="finger3">L</span></span>
-      <span class="kbd hl"><span class="finger4">;</span></span>
-      <span class="kbd"><span class="finger4">'</span></span>
-      <span class="kbd xwide"><span class="finger4">Enter</span></span>
-    </div>
+const aboutMessage=`Dark_types is created and maintained by Arman Hasan, a passionate learner, student, and aspiring developer. Starting his journey with a simple interest in computers, Arman gradually developed a strong curiosity for technology, web design, and coding.
 
-    <!-- Z row -->
-    <div class="kbd-row">
-      <span class="kbd xwide"><span class="finger4">Shift</span></span>
-      <span class="kbd"><span class="finger4">Z</span></span>
-      <span class="kbd"><span class="finger3">X</span></span>
-      <span class="kbd"><span class="finger2">C</span></span>
-      <span class="kbd"><span class="finger1">V</span></span>
-      <span class="kbd"><span class="finger1">B</span></span>
-      <span class="kbd"><span class="finger1">N</span></span>
-      <span class="kbd"><span class="finger1">M</span></span>
-      <span class="kbd"><span class="finger2">,</span></span>
-      <span class="kbd"><span class="finger3">.</span></span>
-      <span class="kbd"><span class="finger4">/</span></span>
-      <span class="kbd xwide"><span class="finger4">Shift</span></span>
-    </div>
+He believes that learning should always be practical and accessible, which is why Dark_types was built—not just as a project, but as a tool that can genuinely help students and beginners improve their typing skills while exploring modern web experiences.
 
-    <!-- Bottom row -->
-    <div class="kbd-row">
-      <span class="kbd wide"><span class="finger4">Ctrl</span></span>
-      <span class="kbd"><span class="finger4">Win</span></span>
-      <span class="kbd"><span class="finger4">Alt</span></span>
-      <span class="kbd space"><span class="finger1">Space</span></span>
-      <span class="kbd"><span class="finger4">Alt</span></span>
-      <span class="kbd"><span class="finger4">Menu</span></span>
-      <span class="kbd wide"><span class="finger4">Ctrl</span></span>
-    </div>
-  </div>
-  <div class="hands">
-  <div class="hand left">
-    <span class="finger4">Pinky</span>
-    <span class="finger3">Ring</span>
-    <span class="finger2">Middle</span>
-    <span class="finger1">Index</span>
-    <span class="thumb">Thumb</span>
-  </div>
-  <div class="hand right">
-    <span class="finger1">Index</span>
-    <span class="finger2">Middle</span>
-    <span class="finger3">Ring</span>
-    <span class="finger4">Pinky</span>
-    <span class="thumb">Thumb</span>
-  </div>
-</div>
+Arman’s vision goes beyond typing practice. He is constantly experimenting with new ideas and features to make Dark_types a unique platform where technology, creativity, and learning meet. By building this project from scratch, he has combined his dedication to self-learning with the goal of creating something valuable for others.
 
-</section>
-  <a href="sound/beep sound.mp3"></a>
+With Dark_types, Arman wants to inspire others—especially students like him—to believe that no matter where you start from, consistent learning and hard work can turn even a small idea into something meaningful.`;
+
+// Typewriter synced to audio or custom duration
+function typeWriter(message,totalTime){
+  typewriterDiv.innerHTML='';
+  const charDelay=totalTime/message.length;
+  for(let i=0;i<message.length;i++){
+    const char=message[i];
+    const span=document.createElement('span');
+    if(char===' '){ span.innerHTML='&nbsp;'; }
+    else if(char==='\n'){ typewriterDiv.appendChild(document.createElement('br')); continue; }
+    else{ span.textContent=char; }
+    span.style.animation=`typeChar ${charDelay}ms forwards`;
+    span.style.animationDelay=`${i*charDelay}ms`;
+    typewriterDiv.appendChild(span);
+  }
+}
+
+// Show notification
+function showNotification(){
+  box.classList.add('show');
+  let duration=480000; // 8 minutes in ms
+  if(sound.src){
+    sound.currentTime=0; sound.play();
+    duration=sound.duration*1000 || 480000;
+  }
+  typeWriter(aboutMessage,duration);
+  setTimeout(()=>{box.classList.remove('show');},duration);
+}
+
+function startIntro(){ showNotification(); }
+function stopIntro(){ sound.pause(); sound.currentTime=0; box.classList.remove('show'); }
+
+box.addEventListener('click',stopIntro);
+</script>
+
 </body>
 </html>
