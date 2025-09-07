@@ -329,3 +329,51 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+
+
+// --- Notification ---
+const box=document.getElementById('notify-box');
+const typewriterDiv=box.querySelector('.typewriter');
+const sound=document.getElementById('notify-sound');
+
+const aboutMessage=`Dark_types is created and maintained by Arman Hasan, a passionate learner, student, and aspiring developer. Starting his journey with a simple interest in computers, Arman gradually developed a strong curiosity for technology, web design, and coding.
+
+He believes that learning should always be practical and accessible, which is why Dark_types was built—not just as a project, but as a tool that can genuinely help students and beginners improve their typing skills while exploring modern web experiences.
+
+Arman’s vision goes beyond typing practice. He is constantly experimenting with new ideas and features to make Dark_types a unique platform where technology, creativity, and learning meet. By building this project from scratch, he has combined his dedication to self-learning with the goal of creating something valuable for others.
+
+With Dark_types, Arman wants to inspire others—especially students like him—to believe that no matter where you start from, consistent learning and hard work can turn even a small idea into something meaningful.`;
+
+// Typewriter synced to audio or custom duration
+function typeWriter(message,totalTime){
+  typewriterDiv.innerHTML='';
+  const charDelay=totalTime/message.length;
+  for(let i=0;i<message.length;i++){
+    const char=message[i];
+    const span=document.createElement('span');
+    if(char===' '){ span.innerHTML='&nbsp;'; }
+    else if(char==='\n'){ typewriterDiv.appendChild(document.createElement('br')); continue; }
+    else{ span.textContent=char; }
+    span.style.animation=`typeChar ${charDelay}ms forwards`;
+    span.style.animationDelay=`${i*charDelay}ms`;
+    typewriterDiv.appendChild(span);
+  }
+}
+
+// Show notification
+function showNotification(){
+  box.classList.add('show');
+  let duration=480000; // 8 minutes in ms
+  if(sound.src){
+    sound.currentTime=0; sound.play();
+    duration=sound.duration*1000 || 480000;
+  }
+  typeWriter(aboutMessage,duration);
+  setTimeout(()=>{box.classList.remove('show');},duration);
+}
+
+function startIntro(){ showNotification(); }
+function stopIntro(){ sound.pause(); sound.currentTime=0; box.classList.remove('show'); }
+
+box.addEventListener('click',stopIntro);
