@@ -377,3 +377,7 @@ function startIntro(){ showNotification(); }
 function stopIntro(){ sound.pause(); sound.currentTime=0; box.classList.remove('show'); }
 
 box.addEventListener('click',stopIntro);
+// For mobile
+
+document.body.classList.add('nav-open');   // open
+document.body.classList.remove('nav-open'); // close

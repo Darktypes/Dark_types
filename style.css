@@ -228,3 +228,90 @@ body.effects-off .card.glow { box-shadow: none !important; }
   .kbd {padding: 8px 10px; font-size: 0.85rem;}
   .footer-grid { grid-template-columns: 1fr; gap: 20px; text-align: center;}
 }
+
+
+
+/* =============================================
+   MOBILE-FIRST ENHANCEMENTS — PATCH
+   (Append this at the END of your existing CSS)
+   ============================================= */
+
+/* 0) Base ergonomics for touch + safe areas */
+:root { --header-h: 64px; }
+* { -webkit-tap-highlight-color: rgba(0,0,0,0); }
+
+/* Respect iOS/Android safe area when header is sticky */
+header { padding-top: env(safe-area-inset-top); }
+
+/* Ensure anchor links don't hide under sticky header */
+[id] { scroll-margin-top: calc(var(--header-h) + env(safe-area-inset-top)); }
+
+/* 1) Readable font sizing on small phones (prevents iOS zoom) */
+html { font-size: clamp(15px, 0.9vw + 13px, 16px); }
+.subtitle { line-height: 1.5; }
+
+/* 2) Tap targets (WCAG 44×44) */
+a, button, .btn, .cta, #theme-toggle, .hamburger, nav a {
+  min-height: 44px; min-width: 44px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+
+/* 3) Lower effect intensity on small/low-power devices for smoothness */
+@media (max-width: 480px), (pointer: coarse) {
+  .card.glow { box-shadow: var(--shadow-soft); }
+  .kbd.hl {
+    transform: none;
+    box-shadow: inset 0 -2px 4px color-mix(in oklab, var(--brand) 25%, transparent);
+  }
+}
+
+/* 4) Navigation & header spacing tuned for mobile */
+header .nav { padding: 12px 0; }
+@media (max-width: 768px) {
+  header .nav { gap: 8px; }
+  nav ul { gap: 4px; }
+  nav a { padding: 8px 10px; }
+}
+
+/* 5) Keyboard rows: wrap nicely and stay centered on phones */
+@media (max-width: 768px) {
+  .keyboard { overflow-x: hidden; }
+  .keyboard .kbd-row { flex-wrap: wrap; justify-content: center; gap: 8px; }
+}
+
+/* 6) Inputs & typing area: comfy touch size */
+input[type="text"], input[type="search"], textarea, .typing-box {
+  font-size: 16px; /* iOS no-zoom on focus */
+  min-height: 44px;
+}
+
+/* 7) Sidebar behavior on mobile: prevent background scroll when open */
+body.nav-open { overflow: hidden; touch-action: none; }
+@media (max-width: 768px) {
+  #sidebar-scrim { inset: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+  .sidebar { width: min(320px, 88vw); }
+}
+
+/* 8) Landscape phones: save vertical space */
+@media (orientation: landscape) and (max-height: 480px) {
+  .hero { padding: 14px 0 6px; }
+  h1.title { font-size: clamp(1.4rem, 4vw, 1.8rem); }
+  .subtitle { font-size: .95rem; }
+}
+
+/* 9) Make 2-col grids stack earlier for narrow tablets/phones */
+@media (max-width: 920px) {
+  .grid.cols-2 { grid-template-columns: 1fr !important; }
+}
+
+/* 10) Modals/scrims: contain scroll chaining to prevent page pull-to-refresh */
+.blurred, #sidebar-scrim.open { overscroll-behavior: contain; }
+
+/* 11) Strong, visible focus rings on touch and keyboard */
+:focus-visible { outline: none; box-shadow: var(--focus); }
+
+/* 12) Respect system theme unless user forces .light (keeps your toggle working) */
+@media (prefers-color-scheme: light) {
+  body:not(.light) { color-scheme: dark light; }
+}
+
